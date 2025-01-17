@@ -4,6 +4,7 @@ class Booking < ApplicationRecord
 
   validate :start_date_before_end_date
   before_create :set_start_date
+  after_save :update_room_status
 
   scope :approved, -> { where(approved: true) }
 
@@ -19,7 +20,7 @@ class Booking < ApplicationRecord
 
   def update_room_status
     capacity = room.capacity
-    booking_counts = room.bookings.approved.count
+    booking_counts = room.bookings.count
     if capacity <= booking_counts
       room.update(is_available: false)
     else
